@@ -4,17 +4,28 @@ const port = 3000,
   app = http.createServer();
 
 app.on( 'request', ( req, res ) => {
+  var body = [];
+  req.on( 'data', ( bodyData ) => {
+    console.log(`getJSONString(bodyData): ${getJSONString(bodyData)}`);
+    console.log(`getJSONString(body): ${getJSONString(body)}`);
+    body.push( bodyData );
+    console.log(`typeof(Buffer): ${typeof(Buffer)}`);
+  } );
+  req.on( 'end', () => {
+    body = Buffer.concat( body ).toString();
+    console.log( `Request Body Contents: ${body}` );
+  } );
+
+  console.log( `Method: ${getJSONString(req.method)}` );
+  console.log( `URL: ${getJSONString(req.url)}` );
+  console.log( `Headers: ${getJSONString(req.headers)}` );
+
   res.writeHead( httpStatus.OK, {
     'Content-Type': 'text/html'
   } );
 
   let responseMessage = '<h1>This will show on the screen.</h1>';
   res.end( responseMessage );
-
-  console.log( req.method );
-  console.log( req.url );
-  //console.log( req.headers );
-  console.log( getJSONString(req.headers) );
 } );
 
 app.listen( port );
